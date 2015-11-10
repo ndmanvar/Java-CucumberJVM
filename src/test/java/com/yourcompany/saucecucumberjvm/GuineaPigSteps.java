@@ -56,22 +56,23 @@ public class GuineaPigSteps {
 	}
 	
 	@Before
-	public void setUp(Scenario scenario) throws Throwable {
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("platform", System.getenv("platform"));
-        caps.setCapability("browserName", System.getenv("browserName"));
-        caps.setCapability("version", System.getenv("version"));
-        caps.setCapability("name", scenario.getName());
+	public void setUp(Scenario scenario) throws Throwable {       
+ 		jobName = scenario.getName();
+    	testResults = false;
+	}
+	
+	@Given("^we are on (.*) using (.*) version (.*)$")
+	public void user_is_on_guinea_pig_page(String platform, String browserName, String version) throws Throwable {
+		DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("platform", platform);
+        caps.setCapability("browserName", browserName);
+        caps.setCapability("version", version);
+        caps.setCapability("name", jobName);
 
 	    driver = new RemoteWebDriver(new URL(URL), caps);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        
-        jobName = caps.getCapability("name").toString();
-        
-        sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
-        testResults = false;
 	}
-	
+
 	@Given("^I am on the Sauce Labs Guinea Pig test page$")
 	public void user_is_on_guinea_pig_page() throws Throwable {
         driver.get("https://saucelabs.com/test/guinea-pig");
@@ -87,10 +88,12 @@ public class GuineaPigSteps {
 		String page_title = driver.getTitle();
 		Assert.assertTrue(page_title.equals("I am another page title - Sauce Labs"));
 		testResults = true;
+		// driver.quit();
 	}
 	
 	@After
 	public void tearDown() throws Throwable {
+		sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
 		driver.quit();
 		UpdateResults(testResults);
 		System.out.println("SauceOnDemandSessionID="+ sessionId + "job-name="+ jobName);
