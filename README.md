@@ -6,7 +6,6 @@
 ```
 
 # Running the tests
-to run: `make run_all_in_parallel`
+to run: `mvn test`
 
-# Running the tests
-You will need JDK 1.6. CucumberJVM does not officially support JDK 1.8
+
